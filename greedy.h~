@@ -42,9 +42,6 @@ void update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> sele
 		int uncovered = 0; 
 		for (int j = 0; j < subsets[i].elements.size(); j++){
 			int element = subsets[i].elements[j];
-			if (hitElements[element - 1] == 0){
-				uncovered++;
-			}
 		}
 		subsets[i].numUncoveredElements = uncovered;
 		#if (DEBUG && UPDATE_DEBUG)
