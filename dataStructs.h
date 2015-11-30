@@ -11,8 +11,54 @@
 struct subsetContainer{
 	int numUncoveredElements;
 	int subsetNumber; // Order read in
-	std::vector<int> elements;
+    int arraySize;
+    // unsigned long long int = 64 bits
+	unsigned long long int* elements;
+    int size;
 };
+
+/**
+ * Initilizes subset
+ *
+ * Called on each subset before adding elements
+ *
+ * FDM
+ * */
+void initSubset(subsetContainer subset, int universeSize){
+    subset.arraySize = universeSize/sizeof(unsigned long long) + 1;
+    subset.elements = new unsigned long long [subset.arraySize];
+    subset.size = 0;
+    // Initialize elements to 0 for the universe
+    for(int i = 0; i < subset.arraySize; i ++){
+        subset.elements[i] = 0;
+    }
+    // Rest of array are 1's (elements outside universe are 1)
+    for(int i = subset.arraySize*sizeof(unsigned long long) - universeSize; 
+            i < subset.arraySize*sizeof(unsigned long long); i++){
+        subset.elements[subset.arraySize-1] = subset.elements[subset.arraySize-1] || (1 << i);
+    }
+}
+
+/**
+ * Adds an element *val* to *subset*
+ *
+ * FDM
+ * */
+void addElement(subsetContainer subset, int val){
+    int index = (int) val / sizeof(unsigned long long);
+    int shift = val - index * sizeof(unsigned long long); 
+    subset.elements[index] = subset.elements[index] || (1 << shift);
+    subset.size += 1;
+}
+
+/** 
+ * Deconstructs subset after we are done with the program
+ *
+ * FDM
+ */
+void deleteSubset(subsetContainer subset){
+    delete subset.elements;
+}
 
 // Sort by number of uncovered elements remaining, least to greatest.
 bool sortSubsetList(subsetContainer a, subsetContainer b){
@@ -29,7 +75,12 @@ bool sortSubsetListIndex(subsetContainer a, subsetContainer b){
 	return (a.subsetNumber < b.subsetNumber);
 }
 
-bool checkSolution(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize){
+/**
+ * checkSolution
+ * 
+ * Needs to be modified to be binary check solution - FDM
+ * */
+/*bool checkSolution(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize){
 	char hitElements[universeSize];
 	std::sort(subsets.begin(), subsets.end(), sortSubsetListIndex);
 	for (int i = 0; i < universeSize; i++){
@@ -72,6 +123,6 @@ void process_solution(std::vector <subsetContainer> subsets, std::vector<int> se
 		}
 		std::cout << std::endl;
 	}
-}
+}*/
 
 #endif

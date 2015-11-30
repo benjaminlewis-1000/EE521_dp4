@@ -10,8 +10,8 @@
 #define READIN 0
 
 #include "dataStructs.h"
-#include "greedy.h"
-#include "backtrack.h"
+//#include "greedy.h"
+//#include "backtrack.h"
 
 using namespace std;
 
@@ -37,6 +37,7 @@ int main(int argc, char** argv){
     for(int i = 0; i < num_subsets; i++){
     	subsetContainer temp;
     	subsets.push_back(temp);
+        initSubset(subsets[i], universeSize); // FDM
    //     subsets[i] = new subsetContainer;
         subsets[i].subsetNumber = i;
       //  state[i] = UNDISCOVERED;
@@ -63,10 +64,11 @@ int main(int argc, char** argv){
         	}
         #endif
         	int val = atoi(sptr);
-            subsets[i].elements.push_back(val);
+            addElement(subsets[i], val); // FDM
+            //subsets[i].elements.push_back(val);
             sptr = strtok(NULL," ");
         }
-        subsets[i].numUncoveredElements = subsets[i].elements.size();
+        subsets[i].numUncoveredElements = subsets[i].size;
         #if(DEBUG && READIN)
         cout << endl << "fin " <<  endl;
         #endif
@@ -83,12 +85,13 @@ int main(int argc, char** argv){
     		cout << endl;
     	}
     #endif
-    
+   
+    // FDM - I commented out the rest of the program 
     vector<int> base_solution;
     
-    greedy(subsets, base_solution, universeSize);
-    int base_size = base_solution.size();
-    cout << "Base solution size is " <<  base_solution.size() << endl;
+    //greedy(subsets, base_solution, universeSize);
+    //int base_size = base_solution.size();
+    //cout << "Base solution size is " <<  base_solution.size() << endl;
     
 /*    bool solved = checkSolution(subsets, base_solution, universeSize);
 //    cout << (solved? "Solved" : "Not solved") << endl;
@@ -96,13 +99,13 @@ int main(int argc, char** argv){
     	process_solution(subsets, base_solution);
     }*/
     
-    vector<int> currentSolution;
-    vector<int> bestSolution = base_solution;
-	sort(subsets.begin(), subsets.end(), sortSubsetListGreatest);
-    backtrack(subsets, subsets, currentSolution, universeSize, base_size, bestSolution);
+    //vector<int> currentSolution;
+    //vector<int> bestSolution = base_solution;
+	//sort(subsets.begin(), subsets.end(), sortSubsetListGreatest);
+    //backtrack(subsets, subsets, currentSolution, universeSize, base_size, bestSolution);
   //  cout << bestSolution.size() << endl;
     
-    process_solution(subsets, bestSolution);
+   // process_solution(subsets, bestSolution);
     
   /*  solutions.push_back(4);
     solutions.push_back(3);
@@ -112,6 +115,11 @@ int main(int argc, char** argv){
     if (solved){
     	process_solution(subsets, solutions);
     }*/
+
+    // FDM deconstructs subsets 
+    for(int i = 0; i < subsets.size(); i++){
+        deleteSubset(subsets[i]);
+    }
     
     return 0;
 
