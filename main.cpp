@@ -24,7 +24,6 @@ using namespace std;
 void printSubset(subsetContainer *subset){
     for(int i = 0; i < subset->arraySize; i++){
         cout << i << ": " << bitset<CONTAINER_LENGTH >(subset->elements[i]) << " " << endl;
-        cout << (unsigned long long) subset->elements[i]  << endl;
     }
     cout << endl;
 }
@@ -51,7 +50,6 @@ int main(int argc, char** argv){
  //   subsetContainer subsets[num_subsets];
     for(int i = 0; i < num_subsets; i++){
     	subsetContainer temp;
-        cout << "Starting " << endl;
         initSubset(&temp, universeSize); // FDM
     	subsets.push_back(temp);
         subsets[i].subsetNumber = i;
@@ -65,10 +63,11 @@ int main(int argc, char** argv){
        	int j = 0;
         while (sptr != NULL) {
         	int val = atoi(sptr);
-            //addElement(subsets[i], val); // FDM
-            //subsets[i].elements.push_back(val);
+            addElement(subsets[i], val - 1); // FDM
             sptr = strtok(NULL," ");
         }
+        printSubset(&subsets[i]);
+     //   printSubset(&temp);
         subsets[i].numUncoveredElements = subsets[i].size;
     }
     

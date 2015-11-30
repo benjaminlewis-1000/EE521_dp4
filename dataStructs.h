@@ -39,14 +39,22 @@ void initSubset(subsetContainer *subset, int universeSize){
     // Initialize elements to 0 for the universe
     for(int i = 0; i < subset->arraySize; i ++){
         subset->elements[i] = 0;
+        // If it's the leftmost, init it to 1s.
+        if ( i == subset->arraySize - 1 ){
+	        subset->elements[i] = ~subset->elements[i];
+	    }
     }
     
     // Rest of array are 1's (elements outside universe are 1)
-    for(int i = subset->arraySize * CONTAINER_LENGTH - universeSize; 
+    int shiftVal = universeSize % CONTAINER_LENGTH;
+    subset->elements[subset->arraySize - 1] <<= shiftVal;
+    
+   /* for(int i = subset->arraySize * CONTAINER_LENGTH - universeSize; 
             i < subset->arraySize * CONTAINER_LENGTH; i++){
+        std::cout << "It " << i << std::endl;
         subset->elements[subset->arraySize-1] = 
         	subset->elements[subset->arraySize-1] | (unsigned long long)(1 << i);
-    }
+    }*/
 }
 
 
@@ -56,9 +64,9 @@ void initSubset(subsetContainer *subset, int universeSize){
  * FDM
  * */
 void addElement(subsetContainer subset, int val){
-    int index = (int) val / sizeof(unsigned long long);
-    int shift = val - index * sizeof(unsigned long long); 
-    subset.elements[index] = subset.elements[index] || (1 << shift);
+    int index = (int) val / CONTAINER_LENGTH;
+    int shift = val - index * CONTAINER_LENGTH; 
+    subset.elements[index] = subset.elements[index] | (1 << shift);
     subset.size += 1;
 }
 
