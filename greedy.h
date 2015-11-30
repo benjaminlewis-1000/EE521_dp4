@@ -8,19 +8,43 @@
 	using namespace std;
 #endif
 
+///checkSolution(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize)
+
 #include "dataStructs.h"
 
+int update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize);
+
 void greedy(std::vector<subsetContainer> &subsets, std::vector<int> &selections, int universeSize){
-	std::sort(subsets.begin(), subsets.end(), sortSubsetListIndex);
+#if (DEBUG && UPDATE_DEBUG)
+	sleep(1);
+#endif
+
+	std::sort(subsets.begin(), subsets.end(), sortSubsetListGreatest);
 	
-	int selection = subsets[0].subsetNumber;
+	if (subsets[0].numUncoveredElements == 0 ){
+		// Base case, nothing left
+		return;
+	}
+	
+	int selection = subsets[0].subsetNumber; // Get subset with greatest # of uncovered elements
 	selections.push_back(selection);
+	
+	std::vector<subsetContainer> updatedSubsets = subsets;
+	
+	update_subsets(updatedSubsets, selections, universeSize);
+
+#if (DEBUG && UPDATE_DEBUG)
+	cout << subsets[0].numUncoveredElements << "   " ;
+	cout << updatedSubsets[0].numUncoveredElements << endl;
+#endif
+	
+	greedy(updatedSubsets, selections, universeSize);
 	
 	// Add to selections
 	// Update subsets by number of unused elements left
 }
 
-void update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize){
+int update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize){
 	// Initialize a vector of elements that have been hit.
 	char hitElements[universeSize];
 	std::sort(subsets.begin(), subsets.end(), sortSubsetListIndex);
@@ -51,6 +75,15 @@ void update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> sele
 			cout << uncovered << " elements uncovered\n";
 		#endif
 	} 
+	
+	int uncoveredRemaining = 0; 
+	for (int i = 0; i < universeSize; i++){
+		if (hitElements[i] == 0){
+			uncoveredRemaining++;
+		}
+	}
+	
+	return uncoveredRemaining;
 }
 
 

@@ -11,6 +11,7 @@
 
 #include "dataStructs.h"
 #include "greedy.h"
+#include "backtrack.h"
 
 using namespace std;
 
@@ -83,15 +84,34 @@ int main(int argc, char** argv){
     	}
     #endif
     
-    vector<int> solutions;
-    solutions.push_back(4);
+    vector<int> base_solution;
+    
+    greedy(subsets, base_solution, universeSize);
+    int base_size = base_solution.size();
+    cout << "Base solution size is " <<  base_solution.size() << endl;
+    
+/*    bool solved = checkSolution(subsets, base_solution, universeSize);
+//    cout << (solved? "Solved" : "Not solved") << endl;
+    if (solved){
+    	process_solution(subsets, base_solution);
+    }*/
+    
+    vector<int> currentSolution;
+    vector<int> bestSolution = base_solution;
+	sort(subsets.begin(), subsets.end(), sortSubsetListGreatest);
+    backtrack(subsets, subsets, currentSolution, universeSize, base_size, bestSolution);
+  //  cout << bestSolution.size() << endl;
+    
+    process_solution(subsets, bestSolution);
+    
+  /*  solutions.push_back(4);
     solutions.push_back(3);
     solutions.push_back(2);
     bool solved = checkSolution(subsets, solutions, universeSize);
 //    cout << (solved? "Solved" : "Not solved") << endl;
     if (solved){
     	process_solution(subsets, solutions);
-    }
+    }*/
     
     return 0;
 

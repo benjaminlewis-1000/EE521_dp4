@@ -14,14 +14,17 @@ struct subsetContainer{
 	std::vector<int> elements;
 };
 
+// Sort by number of uncovered elements remaining, least to greatest.
 bool sortSubsetList(subsetContainer a, subsetContainer b){
 	return (a.numUncoveredElements < b.numUncoveredElements);
 }
 
+// Sort by number of uncovered elements remaining, greatest to least.
 bool sortSubsetListGreatest(subsetContainer a, subsetContainer b){
 	return (a.numUncoveredElements > b.numUncoveredElements);
 }
 
+// Sort in the order the subset was in the input file.
 bool sortSubsetListIndex(subsetContainer a, subsetContainer b){
 	return (a.subsetNumber < b.subsetNumber);
 }
