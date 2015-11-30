@@ -53,8 +53,11 @@ int main(int argc, char** argv){
     	subsetContainer temp;
         cout << "Starting " << endl;
         initSubset(&temp, universeSize); // FDM
+     //   printSubset(&temp);
     	subsets.push_back(temp);
+   //     subsets[i] = new subsetContainer;
         subsets[i].subsetNumber = i;
+      //  state[i] = UNDISCOVERED;
     }
     char* line2;
     char* sptr;

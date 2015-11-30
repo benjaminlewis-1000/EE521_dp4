@@ -3,9 +3,7 @@
 #ifndef DATASTRUCTS_H
 #define DATASTRUCTS_H
 
-#ifndef CONTAINER_LENGTH
 #define CONTAINER_LENGTH (sizeof(unsigned long long) * 8)
-#endif
 
 #define DATA_DEBUG 0
 #if(DATA_DEBUG)
