@@ -14,17 +14,44 @@
 
 struct subsetContainer{
 	int numUncoveredElements;
-	int subsetNumber; // Order read in
+	int oldSubsetNumber; // Order read in
+	int subsetNumber;
     int arraySize;
     // unsigned long long int = 64 bits
-	unsigned long long int* elements;
+	std::vector< unsigned long long int> elements;
     int size;
 };
+
+#define uint64_t unsigned long long
+const uint64_t m1  = 0x5555555555555555; //binary: 0101...
+const uint64_t m2  = 0x3333333333333333; //binary: 00110011..
+const uint64_t m4  = 0x0f0f0f0f0f0f0f0f; //binary:  4 zeros,  4 ones ...
+const uint64_t m8  = 0x00ff00ff00ff00ff; //binary:  8 zeros,  8 ones ...
+const uint64_t m16 = 0x0000ffff0000ffff; //binary: 16 zeros, 16 ones ...
+const uint64_t m32 = 0x00000000ffffffff; //binary: 32 zeros, 32 ones
+const uint64_t hff = 0xffffffffffffffff; //binary: all ones
+const uint64_t h01 = 0x0101010101010101; //the sum of 256 to the power of 0,1,2,3...
+
+//This uses fewer arithmetic operations than any other known  
+//implementation on machines with fast multiplication.
+//It uses 12 arithmetic operations, one of which is a multiply.
+// Code from Wikipedia
+int popcount_3(std::vector<uint64_t> array, int universeSize, int numArrayElements) {
+	unsigned int popcount = 0;
+	for (int i = 0; i < numArrayElements; i++){
+		uint64_t x = array[i];
+		x -= (x >> 1) & m1;             //put count of each 2 bits into those 2 bits
+		x = (x & m2) + ((x >> 2) & m2); //put count of each 4 bits into those 4 bits 
+		x = (x + (x >> 4)) & m4;        //put count of each 8 bits into those 8 bits 
+		popcount += ( (x * h01 ) >> 56 ) ;  //returns left 8 bits of x + (x<<8) + (x<<16) + (x<<24) + ... 
+	}
+	return popcount;
+}
 
 
 /**
  * Initilizes subset
- *
+ *subsetContainer
  * Called on each subset before adding elements
  *
  * FDM
@@ -34,11 +61,11 @@ void initSubset(subsetContainer *subset, int universeSize){
     if (universeSize % CONTAINER_LENGTH != 0){
     	subset->arraySize += 1;
     }
-    subset->elements = new unsigned long long [subset->arraySize];
+ //   subset->elements = new unsigned long long [subset->arraySize];
     subset->size = 0;
     // Initialize elements to 0 for the universe
     for(int i = 0; i < subset->arraySize; i ++){
-        subset->elements[i] = 0;
+        subset->elements.push_back(0);
         // If it's the leftmost, init it to 1s.
         if ( i == subset->arraySize - 1 ){
 	        subset->elements[i] = ~subset->elements[i];
@@ -63,11 +90,14 @@ void initSubset(subsetContainer *subset, int universeSize){
  *
  * FDM
  * */
-void addElement(subsetContainer subset, int val){
+void addElement(subsetContainer *subset, int val){
     int index = (int) val / CONTAINER_LENGTH;
     int shift = val - index * CONTAINER_LENGTH; 
-    subset.elements[index] = subset.elements[index] | (1 << shift);
-    subset.size += 1;
+    uint64_t x = subset->elements[index];
+    uint64_t y = (unsigned long long int) (1 << shift);
+    //std::cout << "X is " << x << " y: " << y << std::endl;
+    subset->elements[index] =  x | y;
+    subset->size += 1;
 }
 
 /** 
@@ -75,13 +105,17 @@ void addElement(subsetContainer subset, int val){
  *
  * FDM
  */
-void deleteSubset(subsetContainer subset){
+/*void deleteSubset(subsetContainer subset){
     delete subset.elements;
-}
+}*/
 
 // Sort by number of uncovered elements remaining, least to greatest.
 bool sortSubsetList(subsetContainer a, subsetContainer b){
 	return (a.numUncoveredElements < b.numUncoveredElements);
+}
+
+bool sortSubsetMinSize(subsetContainer a, subsetContainer b){
+	return (a.size < b.size);
 }
 
 // Sort by number of uncovered elements remaining, greatest to least.
@@ -99,7 +133,12 @@ bool sortSubsetListIndex(subsetContainer a, subsetContainer b){
  * 
  * Needs to be modified to be binary check solution - FDM
  * */
-/*bool checkSolution(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize){
+bool checkSolution(std::vector<subsetContainer> &subsets, 
+        std::vector<int> selections, int universeSize){
+    return 0;
+}
+ /*
+bool checkSolution(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize){
 	char hitElements[universeSize];
 	std::sort(subsets.begin(), subsets.end(), sortSubsetListIndex);
 	for (int i = 0; i < universeSize; i++){
@@ -129,19 +168,18 @@ bool sortSubsetListIndex(subsetContainer a, subsetContainer b){
 	}
 	
 	return solved;
-}
+}*/
 
-void process_solution(std::vector <subsetContainer> subsets, std::vector<int> selections){
+void process_solution(std::vector<std::vector<int> > subsets, std::vector<int> selections){
 	std::sort(selections.begin(), selections.end());
-	std::sort(subsets.begin(), subsets.end(), sortSubsetListIndex);
 	std::cout << selections.size() << std::endl;
 	for (int i = 0; i < selections.size(); i++){
 		std::cout << "(" << selections[i] + 1 << ") ";
-		for (int j = 0; j < subsets[ selections[i] ].elements.size(); j++){
-			std::cout << subsets[ selections[i] ].elements[j] << " ";
+		for (int j = 0; j < subsets[ selections[i] ].size(); j++){
+			std::cout << subsets[ selections[i] ][j] << " ";
 		}
 		std::cout << std::endl;
 	}
-}*/
+}
 
 #endif
