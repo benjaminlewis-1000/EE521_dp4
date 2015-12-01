@@ -18,6 +18,7 @@
 #include "greedy.h"
 #include "backtrack.h"
 
+// TODO : Our numUncovered is initialize wrong.
 
 using namespace std;
 
@@ -119,7 +120,7 @@ int main(int argc, char** argv){
     
     
     int base_size = base_solution.size();
-    cout << "Base solution size is " <<  base_solution.size() << endl;
+    cout << "Base solution size is of size " <<  base_solution.size() << endl;
     
 /*    bool solved = checkSolution(subsets, base_solution, universeSize);
 //    cout << (solved? "Solved" : "Not solved") << endl;*/
@@ -137,17 +138,26 @@ int main(int argc, char** argv){
     	cout << endl;
     }
     cout << "finish" << endl;*/
-    
+    int** orderEnforcingArray = new int*[universeSize];
+    for (int i = 0; i < universeSize; i++){
+    	orderEnforcingArray[i] = new int[universeSize];
+    	for (int j = 0; j < universeSize; j++){
+    		orderEnforcingArray[i][j] = 0;
+    	}
+    }
     vector<int> currentSolution;
     vector<int> bestSolution = base_solution;
     vector<uint64_t> solutionProgress;
     for(int i = 0; i < pruned[0].elements.size(); i++)
         solutionProgress.push_back(0);
 	sort(pruned.begin(), pruned.end(), sortSubsetListGreatest);
-    backtrack(pruned, pruned, currentSolution, solutionProgress, universeSize, base_size, bestSolution);
-    cout << "Best solution size is " << bestSolution.size() << endl;
+	cout << "pruned start at " << pruned[0].subsetNumber << endl;
+	cout << "Uncovered is " << pruned[0].numUncoveredElements << endl;
+    backtrack(pruned, pruned, subsets_decimal, currentSolution, 
+            solutionProgress, universeSize, base_size, bestSolution, orderEnforcingArray);
+    //cout << "Best solution size is " << bestSolution.size() << endl;
     
-    process_solution(subsets_decimal, bestSolution);
+    //process_solution(subsets_decimal, bestSolution);
     
   /*  solutions.push_back(4);
     solutions.push_back(3);

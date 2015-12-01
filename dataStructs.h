@@ -180,6 +180,7 @@ void process_solution(std::vector<std::vector<int> > subsets, std::vector<int> s
 		}
 		std::cout << std::endl;
 	}
+    std::cout << std::endl;
 }
 
 #endif

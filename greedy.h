@@ -53,7 +53,7 @@ int update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> selec
 
 	std::sort(subsets.begin(), subsets.end(), sortSubsetListIndex);
 	std::vector<unsigned long long> currentSetBits;
-//	unsigned long long* currentSetBits = new unsigned long long [subsets[0].arraySize];
+    //	unsigned long long* currentSetBits = new unsigned long long [subsets[0].arraySize];
 	for (int k = 0; k < subsets[0].arraySize; k++){
 		currentSetBits.push_back(0);
 	}

@@ -25,20 +25,20 @@ vector<uint64_t> addSetToSolution(std::vector<uint64_t> solutionProgress,
 }
 
 void backtrack(std::vector<subsetContainer> subsetFull, 
-        std::vector<subsetContainer> subsets, 
+        std::vector<subsetContainer> subsets, std::vector<vector<int> > subsets_decimal, 
         std::vector<int> currentSolution, std::vector<uint64_t> solutionProgress,  
-        int universeSize, int &minSize, std::vector<int> &bestSolution){
+        int universeSize, int &minSize, std::vector<int> &bestSolution, int** orderEnforced){
         
        //cout << "Called " << endl;
     
-    if (currentSolution.size() == 1){
-    	cout << currentSolution[0] << endl;
-    }
-	/*for (int i = 0; i < currentSolution.size(); i++){
+    /*if (currentSolution.size() == 1){
+    	cout << "Starting with "<<  currentSolution[0] << endl;
+    }*/
+	for (int i = 0; i < currentSolution.size(); i++){
 		 cout << currentSolution[i] << " ";
 	}
 	//cout << bitset<CONTAINER_LENGTH >(solutionProgress[0]);
-	cout << std::endl;*/
+	cout << std::endl;
 
 	if ( checkBacktrackSolution(solutionProgress) ){
 		// Is a solution
@@ -47,11 +47,12 @@ void backtrack(std::vector<subsetContainer> subsetFull,
 		if (currentSolution.size() < minSize){
 			bestSolution = currentSolution;
 			minSize = currentSolution.size();
-			cout << "New solution is ";
-			for (int i = 0; i < currentSolution.size(); i++){
+			cout << "New solution is of size " << minSize << endl;
+            process_solution(subsets_decimal, currentSolution);
+			/*for (int i = 0; i < currentSolution.size(); i++){
 				 cout << currentSolution[i] << " ";
 			}
-			cout << endl;
+			cout << endl;*/
 		}
 	} else if (currentSolution.size() + 1 >= minSize) { 
 		// Prune backtracking tree
@@ -60,6 +61,12 @@ void backtrack(std::vector<subsetContainer> subsetFull,
 		for (int i = 0; i < subsets.size(); i++){
 		
 			std::vector<int> solutionCopy = currentSolution;
+			int preceeding;
+			if (currentSolution.size() > 0){
+				preceeding = currentSolution[currentSolution.size() - 1] - 1; // 1 indexed to 0 indexed
+			}else{
+				preceeding = -1; // This is the first item in this branch.
+			}
 			// Add elements from subsetsCopy.begin() + i to solutionCopy
 			//cout << "Erasing element " << i << " from a subset of size " << subsets.size() << endl;
 			
@@ -85,7 +92,7 @@ void backtrack(std::vector<subsetContainer> subsetFull,
 			}
 			
 		  //  cout << "  (" << iterationsRemaining << ") " << bestCase << " - " << uncoveredRemaining << endl; 
-			double scaleFactor = 1.0;
+		/*	double scaleFactor = 1.0;
 			if (iterationsRemaining > 10)
 			 	scaleFactor = 0.6;
 			else if (iterationsRemaining < 2)
@@ -93,11 +100,33 @@ void backtrack(std::vector<subsetContainer> subsetFull,
 			else{
 				scaleFactor = (30.0 - (double) iterationsRemaining)/30.0*0.8;
 				//cout<< "(" << iterationsRemaining << ") - " << scaleFactor << endl;
-			}
-			if (scaleFactor*bestCase < uncoveredRemaining){
+			}*/
+			if (bestCase < uncoveredRemaining){
 				continue;
 			}else{
-				backtrack(subsetFull, subsetsCopy, solutionCopy, solProgC, universeSize, minSize, bestSolution);
+				// Solution is .... s_{n-1}, s_{n}. Preceeding is the set number of s_{n-1}, 
+				// thisRound is the set number of s_{n}. Both are shifted to 0 indexing to work
+				// with the 2D array, which is 0 indexed.
+				int thisRound = solutionCopy[solutionCopy.size() - 1] - 1; // 1 indexed to 0 indexed
+				bool preceeding_not_valid = (preceeding == -1); // I.e. this is the start of a major branch of size 1.
+				std::cout << "thisRound " << thisRound << " Preceeding: " << preceeding << std::endl;
+				std::cout << "Solution size is " << solutionCopy.size() << std::endl;
+				for (int z = 0; z < solutionCopy.size(); z++){
+					std::cout << solutionCopy[z] << " ";
+				}
+				std::cout << "\n";
+				bool combination_not_covered;
+				if (preceeding_not_valid || thisRound < 0){
+					combination_not_covered = true;
+				}else{
+					combination_not_covered = (orderEnforced[thisRound][preceeding] == 0);
+				}
+				if ( preceeding_not_valid || combination_not_covered ){
+					backtrack(subsetFull, subsetsCopy, subsets_decimal, solutionCopy, solProgC, universeSize, minSize, bestSolution, orderEnforced);
+				}
+				if (preceeding != -1 && thisRound < 0){
+					orderEnforced[thisRound][preceeding] = 1;
+				}
 			}
 			
 			// Count how many are covered already
