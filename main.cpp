@@ -10,6 +10,8 @@
 #define DEBUG 1
 #define READIN 1
 
+#define USE_UNIQUE 1
+
 #ifndef CONTAINER_LENGTH
 #define CONTAINER_LENGTH (sizeof(unsigned long long) * 8)
 #endif
@@ -43,6 +45,40 @@ bool isSubsetRedundant(subsetContainer a, vector<subsetContainer> b){
 		}
 	}
 	return false;
+}
+
+/**
+ * linCombos returns the indexes unique subsets in *subsets*
+ * that are not linear combinations of the other subsets and
+ * the given *solution*
+ **/
+vector<int> linCombos(std::vector<subsetContainer> &subsets, 
+        std::vector<uint64_t> solution){
+    vector<int> uniqueSubsets;
+    for (int i = 0; i < subsets.size(); i++){
+        std::vector<uint64_t> tmp;
+        for (int j = 0; j < subsets[0].arraySize; j++){
+            tmp.push_back(solution[j]);
+        }
+        for (int k = 0; k < subsets.size(); k++){
+            for (int j = 0; j < subsets[0].arraySize; j++){
+                if (i != k){
+                    tmp[j] = tmp[j] | subsets[k].elements[j];
+                }
+            }
+        }
+       /* for(int j = 0; j < tmp.size(); j++){
+        	cout << j << ": " << bitset<CONTAINER_LENGTH >(tmp[j]) << " " << endl;
+    	}*/
+        bool unique = 1;
+        for (int j = 0; j < subsets[0].arraySize; j++){
+            unique = unique && !((tmp[j]|subsets[i].elements[j]) == tmp[j]);
+        } 
+        if(unique){
+            uniqueSubsets.push_back(i);
+        }
+    }
+	return uniqueSubsets;
 }
 
 vector<subsetContainer> deleteRedundantSubsets(vector<subsetContainer> subsets){
@@ -126,8 +162,51 @@ int main(int argc, char** argv){
 //    cout << (solved? "Solved" : "Not solved") << endl;*/
     process_solution(subsets_decimal, base_solution);
     
+    /* Backtracking solution*/
     vector<subsetContainer> pruned = deleteRedundantSubsets(subsets);
+  /*  for (int i = 0; i < pruned.size(); i++){
+    	cout << "Subset " << pruned[i].subsetNumber << endl;
+    }*/
+
+    vector<int> currentSolution;
+    vector<int> bestSolution = base_solution;
+    int bestSize = base_size;
+    vector<uint64_t> solutionProgress;
+    for(int i = 0; i < pruned[0].elements.size(); i++)
+        solutionProgress.push_back(0);
+  /*  for(int j = 0; j < solutionProgress.size(); j++){
+    	cout << j << " here: " << bitset<CONTAINER_LENGTH >(solutionProgress[j]) << " " << endl;
+	}*/
+	
+    vector<int> uniqueSubsets = linCombos(pruned, solutionProgress);
+    vector<int> uniqueSubsetNames;
+#if(USE_UNIQUE)
+    for(int i = 0; i < uniqueSubsets.size(); i++){ 
+        // Save name
+        uniqueSubsetNames.push_back(pruned[ uniqueSubsets[i] ].oldSubsetNumber);
+        cout << "Unique subset: " << uniqueSubsetNames[i] << endl;
+        
+        // Add to solutionProgress
+        for(int j = 0; j < subsets[0].arraySize; j++){
+            solutionProgress[j] = solutionProgress[j] 
+                | pruned[ uniqueSubsets[i] ].elements[j];
+        }
+        for(int j = 0; j < solutionProgress.size(); j++){
+        	cout << j << ": " << bitset<CONTAINER_LENGTH >(solutionProgress[j]) << " " << endl;
+    	}
+
+        // Remove them from subsets
+        pruned.erase(pruned.begin() + uniqueSubsets[i]);
+
+        // Reduce minSize
+        bestSize--;
+    }
     
+    for (int i = 0; i < pruned.size(); i++){
+    	pruned[i].subsetNumber = i;
+    }
+#endif
+
     /*
     cout << "Pruned size is " << pruned.size() << endl;
     for(int i = 0; i < pruned.size(); i++){
@@ -145,33 +224,29 @@ int main(int argc, char** argv){
     		orderEnforcingArray[i][j] = 0;
     	}
     }
-    vector<int> currentSolution;
-    vector<int> bestSolution = base_solution;
-    vector<uint64_t> solutionProgress;
-    for(int i = 0; i < pruned[0].elements.size(); i++)
-        solutionProgress.push_back(0);
+    // Sort before calling backtrack
 	sort(pruned.begin(), pruned.end(), sortSubsetListGreatest);
+
 	cout << "pruned start at " << pruned[0].subsetNumber << endl;
 	cout << "Uncovered is " << pruned[0].numUncoveredElements << endl;
+
     backtrack(pruned, pruned, subsets_decimal, currentSolution, 
             solutionProgress, universeSize, base_size, bestSolution, orderEnforcingArray);
-    //cout << "Best solution size is " << bestSolution.size() << endl;
-    
-    //process_solution(subsets_decimal, bestSolution);
-    
-  /*  solutions.push_back(4);
-    solutions.push_back(3);
-    solutions.push_back(2);
-    bool solved = checkSolution(subsets, solutions, universeSize);
-//    cout << (solved? "Solved" : "Not solved") << endl;
-    if (solved){
-    	process_solution(subsets, solutions);
-    }*/
 
-    // FDM deconstructs subsets 
-   /* for(int i = 0; i < subsets.size(); i++){
-        deleteSubset(subsets[i]);
-    }*/
+    vector<int> finalSolution;
+    // Add unique sets to backtrack solution
+    for(int i = 0; i < uniqueSubsetNames.size(); i++){
+        finalSolution.push_back(uniqueSubsetNames[i]);
+    }
+
+    // Fix names
+    for(int i = 0; i < bestSolution.size(); i++){
+
+    }
+
+
+    cout << "Best solution size is " << bestSolution.size() << endl;
+    process_solution(subsets_decimal, bestSolution);
     
     return 0;
 
