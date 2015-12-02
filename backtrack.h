@@ -88,8 +88,8 @@ void backtrack(std::vector<subsetContainer> subsetFull,
 			for (int i = 0; i < currentSolution.size(); i++){
 				 cout << subsetFull[ currentSolution[i] ].oldSubsetNumber + 1 << " ";
 			}
-			cout << endl;
-            process_solution(subsets_decimal, bestSolution);*/
+			cout << endl;*/
+         //   process_solution(subsets_decimal, bestSolution);
 		}
 	} else if (currentSolution.size() + 1 >= minSize) { 
 		// Prune backtracking tree
@@ -129,7 +129,7 @@ void backtrack(std::vector<subsetContainer> subsetFull,
 				bestCase += subsetsCopy[k].numUncoveredElements;
 			}
 			
-		 //   cout << "  (" << iterationsRemaining << ") " << bestCase << " - " << uncoveredRemaining << endl; 
+		//   cout << "  (" << iterationsRemaining << ") " << bestCase << " - " << uncoveredRemaining << endl; 
 		/*	double scaleFactor = 1.0;
 			if (iterationsRemaining > 10)
 			 	scaleFactor = 0.6;
@@ -159,13 +159,14 @@ void backtrack(std::vector<subsetContainer> subsetFull,
 					combination_not_covered = (orderEnforced[thisRound][preceeding] == 0);
 				}
 				if ( preceeding_not_valid || combination_not_covered ){
-					backtrack(subsetFull, subsetsCopy, subsets_decimal, solutionCopy, solProgC, universeSize, minSize, bestSolution, orderEnforced);
+					backtrack(subsetFull, subsetsCopy, subsets_decimal, solutionCopy, solProgC, universeSize, minSize, bestSolution, orderEnforced, tim, startTime);
 					if (preceeding != -1){
 						orderEnforced[preceeding][thisRound] = 1;
 					}
-				}else{
-				//	std::cout << "Pruned: " << preceeding << " has already been preceeded by " <<  thisRound << "(Already had a " << thisRound << ", " << preceeding << ")" << std::endl;
 				}
+				/*else{
+				//	std::cout << "Pruned: " << preceeding << " has already been preceeded by " <<  thisRound << "(Already had a " << thisRound << ", " << preceeding << ")" << std::endl;
+				}*/
 			}
 			
 			// Count how many are covered already

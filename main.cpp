@@ -185,7 +185,7 @@ int main(int argc, char** argv){
     }*/
 
     vector<int> currentSolution;
-    vector<int> bestSolution = base_solution;
+    vector<int> bestSolution;
     int bestSize = base_size;
     vector<uint64_t> solutionProgress;
     for(int i = 0; i < pruned[0].elements.size(); i++)
@@ -201,7 +201,7 @@ int main(int argc, char** argv){
 //    for(int i = 0; i < uniqueSubset.size(); i++){ 
         // Save name
         uniqueSubsetNames.push_back(pruned[ uniqueSubsets[i] ].oldSubsetNumber);
-    //    cout << "Unique subset: " << uniqueSubsetNames[i] << endl;
+     //   cout << "Unique subset: " << uniqueSubsetNames[i] << endl;
         
         // Add to solutionProgress
         for(int j = 0; j < subsets[0].arraySize; j++){
@@ -262,6 +262,7 @@ int main(int argc, char** argv){
     backtrack(pruned, pruned, prunedSubsetElements, currentSolution, 
             solutionProgress, universeSize, bestSize, bestSolution, 
             orderEnforcingArray, tim, startTime);
+            
 
     vector<int> finalSolution;
     // Add unique sets to backtrack solution
@@ -273,17 +274,23 @@ int main(int argc, char** argv){
 	sort(pruned.begin(), pruned.end(), sortSubsetListIndex);
     for(int i = 0; i < bestSolution.size(); i++){
         finalSolution.push_back(pruned[ bestSolution[i] ].oldSubsetNumber);
-    //    cout << pruned[bestSolution[i] ].oldSubsetNumber + 1 << " ";
+       // cout << pruned[bestSolution[i] ].oldSubsetNumber + 1 << " ";
     }
    // cout << endl;
+  //  cout << bestSolution.size() << " best sol. size\n";
 
     sort(finalSolution.begin(), finalSolution.end());
   //  cout << "Best solution size is " << finalSolution.size() << endl;
-    if (checkSolution(subsets, finalSolution) ){
-	    process_solution(subsets_decimal, finalSolution);
+  	if (bestSolution.size() > 0){
+		if (checkSolution(subsets, finalSolution) ){
+			process_solution(subsets_decimal, finalSolution);
+		}else{
+			cout << "Solution does not cover the universe. " << endl;
+			process_solution(subsets_decimal, finalSolution);
+		}
 	}else{
-		cout << "Solution does not cover the universe. " << endl;
-	    process_solution(subsets_decimal, finalSolution);
+		// Didn't find anything better than the greedy solution
+		process_solution(subsets_decimal, base_solution);
 	}
     
     return 0;
