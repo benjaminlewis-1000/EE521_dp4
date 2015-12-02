@@ -12,7 +12,7 @@
 
 #include "dataStructs.h"
 
-int update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize);
+int update_subsets_greedy(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize);
 
 void greedy(std::vector<subsetContainer> &subsets, std::vector<int> &selections, int universeSize){
 #if (DEBUG && UPDATE_DEBUG)
@@ -35,7 +35,7 @@ void greedy(std::vector<subsetContainer> &subsets, std::vector<int> &selections,
 	
 	std::vector<subsetContainer> updatedSubsets = subsets;
 	
-	update_subsets(updatedSubsets, selections, universeSize);
+	update_subsets_greedy(updatedSubsets, selections, universeSize);
 
 #if (DEBUG && UPDATE_DEBUG)
 	std::sort(updatedSubsets.begin(), updatedSubsets.end(), sortSubsetListGreatest);
@@ -49,7 +49,7 @@ void greedy(std::vector<subsetContainer> &subsets, std::vector<int> &selections,
 	// Update subsets by number of unused elements left
 }
 
-int update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize){
+int update_subsets_greedy(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize){
 
 	std::sort(subsets.begin(), subsets.end(), sortSubsetListIndex);
 	std::vector<unsigned long long> currentSetBits;
@@ -78,6 +78,8 @@ int update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> selec
 	
 	return uncoveredRemaining;
 	
+}
+
 	/*// Initialize a vector of elements that have been hit.
 	char hitElements[universeSize];
 	for (int i = 0; i < universeSize; i++){
@@ -116,7 +118,5 @@ int update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> selec
 	}
 	
 	*/
-}
-
 
 #endif

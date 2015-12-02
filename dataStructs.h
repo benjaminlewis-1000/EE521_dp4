@@ -133,9 +133,23 @@ bool sortSubsetListIndex(subsetContainer a, subsetContainer b){
  * 
  * Needs to be modified to be binary check solution - FDM
  * */
-bool checkSolution(std::vector<subsetContainer> &subsets, 
-        std::vector<int> selections, int universeSize){
-    return 0;
+bool checkSolution(std::vector<subsetContainer> subsets, std::vector<int> selections){
+	std::vector<uint64_t> cover;
+    std::sort(subsets.begin(), subsets.end(), sortSubsetListIndex);
+	for (int i = 0; i < subsets[0].elements.size(); i++){
+		cover.push_back(0);
+	}
+    for (int i = 0; i < selections.size(); i++){
+    	for (int j = 0; j < subsets[0].elements.size(); j++){
+    		cover[j] |= subsets[ selections[i] ].elements[j]; 
+    	}
+    }
+    bool covered = true; 
+    for (int i = 0; i < subsets[0].elements.size(); i++){
+    	covered = covered && ! ( ~ cover[i] );
+    }
+    
+    return covered;
 }
  /*
 bool checkSolution(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize){

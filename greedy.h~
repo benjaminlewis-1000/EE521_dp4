@@ -49,11 +49,11 @@ void greedy(std::vector<subsetContainer> &subsets, std::vector<int> &selections,
 	// Update subsets by number of unused elements left
 }
 
-int update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize){
+int update_subsets_greedy(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize){
 
 	std::sort(subsets.begin(), subsets.end(), sortSubsetListIndex);
 	std::vector<unsigned long long> currentSetBits;
-//	unsigned long long* currentSetBits = new unsigned long long [subsets[0].arraySize];
+    //	unsigned long long* currentSetBits = new unsigned long long [subsets[0].arraySize];
 	for (int k = 0; k < subsets[0].arraySize; k++){
 		currentSetBits.push_back(0);
 	}
@@ -78,6 +78,8 @@ int update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> selec
 	
 	return uncoveredRemaining;
 	
+}
+
 	/*// Initialize a vector of elements that have been hit.
 	char hitElements[universeSize];
 	for (int i = 0; i < universeSize; i++){
@@ -116,7 +118,5 @@ int update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> selec
 	}
 	
 	*/
-}
-
 
 #endif

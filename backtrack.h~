@@ -24,22 +24,54 @@ vector<uint64_t> addSetToSolution(std::vector<uint64_t> solutionProgress,
     return solutionProgress;
 }
 
+int update_subsets_backtrack(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize, std::vector<uint64_t> solutionProgress){
+
+	std::sort(subsets.begin(), subsets.end(), sortSubsetListIndex);
+    //	unsigned long long* solutionProgress = new unsigned long long [subsets[0].arraySize];
+	/*for (int i = 0; i < selections.size(); i++){
+		for (int j = 0; j < subsets[0].arraySize; j++){
+			solutionProgress[j] |= subsets[ selections[i] ].elements[j];
+		}
+	}*/
+	int uncoveredRemaining = popcount_3(solutionProgress, universeSize, subsets[0].arraySize) - ( CONTAINER_LENGTH - universeSize );
+	
+	// Now, tmp holds the set.
+	for (int i = 0; i < subsets.size(); i++){
+		std::vector<unsigned long long> tmp;
+		for (int k = 0; k < subsets[0].arraySize; k++){
+			tmp.push_back(0);
+		}
+		for (int j = 0; j < subsets[0].arraySize; j++){
+			tmp[j] = (solutionProgress[j] | subsets[i].elements[j]) ^ solutionProgress[j];
+		}
+		subsets[i].numUncoveredElements = popcount_3(tmp, universeSize, subsets[0].arraySize);
+	}
+	
+	return uncoveredRemaining;
+	
+}
+
+
 void backtrack(std::vector<subsetContainer> subsetFull, 
         std::vector<subsetContainer> subsets, std::vector<vector<int> > subsets_decimal, 
         std::vector<int> currentSolution, std::vector<uint64_t> solutionProgress,  
-        int universeSize, int &minSize, std::vector<int> &bestSolution, int** orderEnforced){
+        int universeSize, int &minSize, std::vector<int> &bestSolution, int** orderEnforced,
+        timeval tim, double startTime){
         
        //cout << "Called " << endl;
     
     /*if (currentSolution.size() == 1){
     	cout << "Starting with "<<  currentSolution[0] << endl;
     }*/
-	for (int i = 0; i < currentSolution.size(); i++){
+	/*for (int i = 0; i < currentSolution.size(); i++){
 		 cout << currentSolution[i] << " ";
 	}
-	cout << std::endl;
-	//cout << bitset<CONTAINER_LENGTH >(solutionProgress[0]);
-	//
+	cout << std::endl;*/
+    /*for(int j = 0; j < solutionProgress.size(); j++){
+        cout << "  " << j << ": " << bitset<CONTAINER_LENGTH >(solutionProgress[j]) << " " << endl;
+    }*/
+  //  cout << "Best solution size is " << minSize << endl;
+    //process_solution(subsets_decimal, bestSolution);
 
 	if ( checkBacktrackSolution(solutionProgress) ){
 		// Is a solution
@@ -48,12 +80,16 @@ void backtrack(std::vector<subsetContainer> subsetFull,
 		if (currentSolution.size() < minSize){
 			bestSolution = currentSolution;
 			minSize = currentSolution.size();
-			cout << "New sub solution is of size " << minSize << endl;
-            //process_solution(subsets_decimal, currentSolution);
-			/*for (int i = 0; i < currentSolution.size(); i++){
+		/*	cout << "New sub solution is of size " << minSize << ": " << endl;
+			for (int i = 0; i < currentSolution.size(); i++){
 				 cout << currentSolution[i] << " ";
 			}
-			cout << endl;*/
+			cout << endl;
+			for (int i = 0; i < currentSolution.size(); i++){
+				 cout << subsetFull[ currentSolution[i] ].oldSubsetNumber + 1 << " ";
+			}
+			cout << endl;
+            process_solution(subsets_decimal, bestSolution);*/
 		}
 	} else if (currentSolution.size() + 1 >= minSize) { 
 		// Prune backtracking tree
@@ -76,9 +112,9 @@ void backtrack(std::vector<subsetContainer> subsetFull,
             vector<uint64_t> solProgC = addSetToSolution(solutionProgress, subsets[i]);
 			
 			std::vector<subsetContainer> subsetsCopy = subsetFull;
-			// update_subsets returns the number of elements already in joined subsets,
+			// update_subsets_backtrack returns the number of elements already in joined subsets,
 			// but we need universeSize - that number for uncoveredRemaining.
-			int uncoveredRemaining =  universeSize - update_subsets(subsetsCopy, solutionCopy, universeSize) ;
+			int uncoveredRemaining =  universeSize - update_subsets_backtrack(subsetsCopy, solutionCopy, universeSize, solutionProgress) ;
 			std::sort(subsetsCopy.begin(), subsetsCopy.end(), sortSubsetListGreatest);
 			while(subsetsCopy.size() > 0 
                     &&  subsetsCopy[subsetsCopy.size() - 1 ].numUncoveredElements == 0 ){
@@ -93,7 +129,7 @@ void backtrack(std::vector<subsetContainer> subsetFull,
 				bestCase += subsetsCopy[k].numUncoveredElements;
 			}
 			
-		  //  cout << "  (" << iterationsRemaining << ") " << bestCase << " - " << uncoveredRemaining << endl; 
+		 //   cout << "  (" << iterationsRemaining << ") " << bestCase << " - " << uncoveredRemaining << endl; 
 		/*	double scaleFactor = 1.0;
 			if (iterationsRemaining > 10)
 			 	scaleFactor = 0.6;
@@ -142,7 +178,7 @@ void backtrack(std::vector<subsetContainer> subsetFull,
 			// Not even go down that line if uncovered == 0 
 			
 			// Sort them again? 
-	//		update_subsets(subsetFull, solutionCopy, universeSize);
+	//		update_subsets_backtrack(subsetFull, solutionCopy, universeSize);
 			
 			// Pick the element
 			// Copy the subsets and remove the elements
