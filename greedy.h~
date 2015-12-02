@@ -12,7 +12,7 @@
 
 #include "dataStructs.h"
 
-int update_subsets(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize);
+int update_subsets_greedy(std::vector<subsetContainer> &subsets, std::vector<int> selections, int universeSize);
 
 void greedy(std::vector<subsetContainer> &subsets, std::vector<int> &selections, int universeSize){
 #if (DEBUG && UPDATE_DEBUG)
@@ -35,7 +35,7 @@ void greedy(std::vector<subsetContainer> &subsets, std::vector<int> &selections,
 	
 	std::vector<subsetContainer> updatedSubsets = subsets;
 	
-	update_subsets(updatedSubsets, selections, universeSize);
+	update_subsets_greedy(updatedSubsets, selections, universeSize);
 
 #if (DEBUG && UPDATE_DEBUG)
 	std::sort(updatedSubsets.begin(), updatedSubsets.end(), sortSubsetListGreatest);

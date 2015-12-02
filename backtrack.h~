@@ -89,7 +89,7 @@ void backtrack(std::vector<subsetContainer> subsetFull,
 				 cout << subsetFull[ currentSolution[i] ].oldSubsetNumber + 1 << " ";
 			}
 			cout << endl;*/
-            process_solution(subsets_decimal, bestSolution);
+         //   process_solution(subsets_decimal, bestSolution);
 		}
 	} else if (currentSolution.size() + 1 >= minSize) { 
 		// Prune backtracking tree

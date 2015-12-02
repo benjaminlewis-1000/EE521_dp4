@@ -135,7 +135,7 @@ bool sortSubsetListIndex(subsetContainer a, subsetContainer b){
  * */
 bool checkSolution(std::vector<subsetContainer> subsets, std::vector<int> selections){
 	std::vector<uint64_t> cover;
-    sort(subsets.begin(), subsets.end(), sortSubsetListIndex);
+    std::sort(subsets.begin(), subsets.end(), sortSubsetListIndex);
 	for (int i = 0; i < subsets[0].elements.size(); i++){
 		cover.push_back(0);
 	}

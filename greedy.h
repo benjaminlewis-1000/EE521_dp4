@@ -80,43 +80,4 @@ int update_subsets_greedy(std::vector<subsetContainer> &subsets, std::vector<int
 	
 }
 
-	/*// Initialize a vector of elements that have been hit.
-	char hitElements[universeSize];
-	for (int i = 0; i < universeSize; i++){
-		// Initialize every element to 0 (uncovered)
-		hitElements[i] = 0;
-	}
-	
-	for (int i = 0; i < selections.size(); i++){
-		int subsetIndex = selections[i];
-		for (int j = 0; j < subsets[subsetIndex].elements.size(); j++){
-			int element = subsets[subsetIndex].elements[j];
-			hitElements[element - 1 ] = 1; // Subtract 1 for [1..n] elements
-		}
-	}
-	
-	// Update the numUncoveredElements for each subset.
-	for (int i = 0; i < subsets.size(); i++){
-		int uncovered = 0; 
-		for (int j = 0; j < subsets[i].elements.size(); j++){
-			int element = subsets[i].elements[j];
-			if (hitElements[element - 1] == 0){
-				uncovered++;
-			}
-		}
-		subsets[i].numUncoveredElements = uncovered;
-		#if (DEBUG && UPDATE_DEBUG)
-			cout << uncovered << " elements uncovered\n";
-		#endif
-	} 
-	
-	int uncoveredRemaining = 0; 
-	for (int i = 0; i < universeSize; i++){
-		if (hitElements[i] == 0){
-			uncoveredRemaining++;
-		}
-	}
-	
-	*/
-
 #endif
